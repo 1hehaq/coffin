@@ -1,0 +1,464 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap');
+
+:root {
+    --bg-color: #0a0e14;
+    --text-color: #e6e6e6;
+    --neon-color: #00ff00;
+    --accent-color: #ff00ff;
+    --terminal-bg: rgba(16, 24, 32, 0.95);
+    --matrix-color: #0F0;
+    --cursor-default: url('cursor/default.png'), auto;
+    --cursor-pointer: url('cursor/default.png'), pointer;
+    --hover-color: #8A2BE2;
+}
+
+.neon-mode {
+    --bg-color: #000000;
+    --text-color: #ffffff;
+    --neon-color: #00ffff;
+    --accent-color: #ff00ff;
+    --terminal-bg: rgba(0, 0, 0, 0.8);
+    --matrix-color: #00ffff;
+    --cursor-default: url('cursor/neon.png'), auto;
+    --cursor-pointer: url('cursor/neon.png'), pointer;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Fira Code', monospace;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.5s ease, color 0.5s ease;
+    cursor: var(--cursor-default);
+}
+
+#terminal {
+    width: 80vw;
+    height: 80vh;
+    background-color: var(--terminal-bg);
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: background-color 0.5s ease, box-shadow 0.5s ease;
+}
+
+#terminal-header {
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.5s ease;
+}
+
+.terminal-button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.close { background-color: #ff5f56; }
+.minimize { background-color: #ffbd2e; }
+.maximize { background-color: #27c93f; }
+
+.terminal-title {
+    color: var(--neon-color);
+    margin-left: 20px;
+    font-size: 14px;
+    flex-grow: 1;
+    transition: color 0.5s ease, text-shadow 0.5s ease;
+}
+
+#theme-toggle {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 18px;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+}
+
+#theme-toggle i {
+    display: inline-block;
+    transition: transform 0.3s ease-in-out;
+}
+
+#theme-toggle:hover i {
+    transform: rotate(180deg);
+}
+
+a, button, .terminal-button, #theme-toggle {
+    cursor: var(--cursor-pointer);
+}
+
+body, a, button, .terminal-button, #theme-toggle {
+    transition: cursor 0.3s ease;
+}
+
+.custom-cursor {
+    display: none !important;
+}
+
+#theme-toggle, #theme-toggle * {
+    cursor: var(--cursor-pointer) !important;
+}
+
+#terminal-content {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--neon-color) var(--bg-color);
+    outline: none;
+}
+
+#terminal-content {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+#terminal-content::-webkit-scrollbar {
+    display: none;
+}
+
+#terminal-content {
+    overflow-y: scroll;
+}
+
+#terminal-content::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 8px;
+    height: 100%;
+    background-color: var(--bg-color);
+}
+
+#terminal-content::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 8px;
+    background-color: var(--neon-color);
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+#terminal-content:hover::before {
+    opacity: 1;
+}
+
+html, body, #terminal, #terminal-content, #terminal-content * {
+    cursor: var(--cursor-default) !important;
+}
+
+a, button, .terminal-button, #theme-toggle, #terminal-content a {
+    cursor: var(--cursor-pointer) !important;
+}
+
+#output p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+#input-line {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+#prompt {
+    color: var(--neon-color);
+    white-space: pre-wrap;
+    word-break: break-all;
+    margin-right: 5px;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    transition: color 0.5s ease, text-shadow 0.5s ease;
+    outline: none;
+}
+
+#cursor {
+    display: inline-block;
+    width: 8px;
+    background-color: var(--neon-color);
+    animation: blink 0.7s infinite;
+    margin-left: 5px;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+}
+
+#auto-complete {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    border: 1px solid var(--neon-color);
+    border-radius: 4px;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 10;
+}
+
+#auto-complete div {
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+#auto-complete div:hover,
+#auto-complete div.selected {
+    background-color: rgba(0, 255, 0, 0.2);
+}
+
+.neon-mode {
+    --bg-color: #000000;
+    --text-color: #ffffff;
+    --neon-color: #00ffff;
+    --accent-color: #ff00ff;
+    --terminal-bg: rgba(0, 0, 0, 0.8);
+    --matrix-color: #00ffff;
+    --cursor-default: url('cursor/neon.png'), auto;
+    --cursor-pointer: url('cursor/neon.png'), pointer;
+}
+
+.neon-mode body {
+    background-color: var(--bg-color);
+    cursor: var(--cursor-default);
+}
+
+.neon-mode #terminal {
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+}
+
+.neon-mode #prompt,
+.neon-mode .terminal-title {
+    text-shadow: 0 0 5px var(--neon-color);
+}
+
+#matrix-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    color: var(--matrix-color);
+}
+
+#glitch-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, rgba(255, 0, 0, 0.1), rgba(0, 255, 0, 0.1), rgba(0, 0, 255, 0.1));
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.social-link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--text-color);
+    text-decoration: none;
+    margin-right: 15px;
+}
+
+.social-link:hover {
+    color: var(--accent-color);
+}
+
+.social-link-text {
+    margin-left: 5px;
+}
+
+@media (max-width: 768px) {
+    #terminal {
+        width: 95vw;
+        height: 90vh;
+    }
+}
+
+
+.social-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+body {
+    cursor: var(--cursor-default);
+}
+
+.neon-mode body {
+    cursor: var(--cursor-default);
+}
+
+a, button, .terminal-button, #theme-toggle {
+    cursor: var(--cursor-pointer);
+}
+
+.neon-mode a,
+.neon-mode button,
+.neon-mode .terminal-button,
+.neon-mode #theme-toggle {
+    cursor: var(--cursor-pointer);
+}
+
+body, a, button, .terminal-button, #theme-toggle {
+    transition: cursor 0.3s ease;
+}
+
+.command-echo {
+    color: var(--neon-color);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.command-output {
+    color: var(--text-color);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.command-output a {
+    color: var(--neon-color);
+    text-decoration: none;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.command-output a::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    bottom: -2px;
+    left: 0;
+    background-color: var(--neon-color);
+    transform: scaleX(0);
+    transform-origin: bottom right;
+    transition: transform 0.3s ease;
+}
+
+.command-output a:hover {
+    color: var(--accent-color);
+}
+
+.command-output a:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+}
+
+a {
+    color: var(--neon-color);
+    text-decoration: none;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+a::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background-color: var(--neon-color);
+    transform: scaleX(0);
+    transform-origin: bottom right;
+    transition: transform 0.3s ease, background-color 0.5s ease;
+}
+
+a:hover {
+    color: var(--hover-color);
+}
+
+a:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+    background-color: var(--hover-color);
+}
+
+.command-output a {
+    color: var(--neon-color);
+    text-decoration: none;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.command-output a::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background-color: var(--neon-color);
+    transform: scaleX(0);
+    transform-origin: bottom right;
+    transition: transform 0.3s ease, background-color 0.5s ease;
+}
+
+.command-output a:hover {
+    color: var(--hover-color);
+}
+
+.command-output a:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+    background-color: var(--hover-color);
+}
+
+.social-link a {
+    color: var(--neon-color);
+    text-decoration: none;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.social-link a::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background-color: var(--neon-color);
+    transform: scaleX(0);
+    transform-origin: bottom right;
+    transition: transform 0.3s ease, background-color 0.5s ease;
+}
+
+.social-link a:hover {
+    color: var(--hover-color);
+}
+
+.social-link a:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+    background-color: var(--hover-color);
+}
+
+.neon-mode a::after {
+    background-color: var(--neon-color);
+}
+
+a:hover::after, .command-output a:hover::after, .social-link a:hover::after {
+    background-color: var(--hover-color);
+}
